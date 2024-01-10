@@ -24,14 +24,14 @@ while run:
             pygame.quit()
     for i in range(1, 25):
         for j in ScMap[str(i)]:
-            pygame.draw.line(win,[0,0,0],ScPositions[(str(i))],ScPositions[(str(j))],width=3)
+            pygame.draw.line(win,[0,0,0],ScPositions[(str(i))],ScPositions[(str(j))],width=4)
     for position in ScPositions:
         if iter < 2:
-            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 10)
-            pygame.draw.circle(win, [255, 255, 255], ScPositions[position], 8)
+            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 12)
+            pygame.draw.circle(win, [255, 255, 255], ScPositions[position], 10)
         else:
-            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 10)
-            pygame.draw.circle(win, ScColors[best[1][position]], ScPositions[position], 8)
+            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 12)
+            pygame.draw.circle(win, ScColors[best[1][position]], ScPositions[position], 10)
     if score != 24:
         Best5 = population[:5]
         Worst5 = population[5:]

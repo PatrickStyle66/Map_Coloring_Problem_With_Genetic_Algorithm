@@ -1,5 +1,5 @@
-import  pygame
 from  GAfunctions import *
+from PygameClasses import *
 W, H = 818, 622
 
 win = pygame.display.set_mode((W, H))
@@ -16,12 +16,25 @@ InitialPop.sort(key=lambda x: x[0],reverse=True)
 population = InitialPop[:]
 score = 0
 iter = 1
+regen = button((0, 100, 0), 309, 550, 200, 50, std_button('Generate again',0))
+show_button = False
 while run:
     win.blit(bg,(0,0))
     for event in pygame.event.get():
+        pos = pygame.mouse.get_pos()
         if event.type == pygame.QUIT:
             run = False
             pygame.quit()
+        if regen.isOver(pos) and show_button:
+            regen.color = (0,255,0)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                InitialPop = generatePop()
+                InitialPop.sort(key=lambda x: x[0], reverse=True)
+                population = InitialPop[:]
+                score = 0
+                iter = 1
+        else:
+            regen.color = (0, 100, 0)
     for i in range(1, 25):
         for j in ScMap[str(i)]:
             pygame.draw.line(win,[0,0,0],ScPositions[(str(i))],ScPositions[(str(j))],width=4)
@@ -52,13 +65,17 @@ while run:
         win.blit(generation, (50, 375))
         win.blit(genscore, (50, 425))
         iter = iter + 1
+        show_button = False
     else:
         startscore = font.render(f'Starting score: {startingscore}', 1, (0, 0, 0))
         generation = font.render(f'Generation: {iter}', 1, (0, 0, 0))
         genscore = font.render(f'Best Chromossome score: {score}', 1, (0, 0, 0))
         bestgen = font.render(f'Best Generation: {iter}', 1, (0, 0, 0))
+        show_button = True
+        regen.draw(win, (0, 0, 0))
         win.blit(startscore,(50,335))
         win.blit(generation, (50, 375))
         win.blit(genscore, (50, 425))
         win.blit(bestgen,(50,475))
+
     pygame.display.update()

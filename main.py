@@ -16,8 +16,29 @@ InitialPop.sort(key=lambda x: x[0],reverse=True)
 population = InitialPop[:]
 score = 0
 iter = 1
-regen = button((0, 100, 0), 309, 550, 200, 50, std_button('Generate again',0))
+regen = button((0, 100, 0), 159, 550, 200, 50, std_button('Generate again',0))
+step_by_step = button((0, 100, 0), 434, 550, 200, 50, std_button('Step By Step',0))
 show_button = False
+MapsList = []
+
+def StepFunc(MapsList):
+    run = True
+    currentMap = 0
+    while run:
+        win.blit(bg, (0, 0))
+        for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+        for i in range(1, 25):
+            for j in ScMap[str(i)]:
+                pygame.draw.line(win, [0, 0, 0], ScPositions[(str(i))], ScPositions[(str(j))], width=4)
+        for position in ScPositions:
+            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 12)
+            pygame.draw.circle(win, ScColors[MapsList[currentMap][1][position]], ScPositions[position], 10)
+
+
 while run:
     win.blit(bg,(0,0))
     for event in pygame.event.get():
@@ -35,6 +56,12 @@ while run:
                 iter = 1
         else:
             regen.color = (0, 100, 0)
+        if step_by_step.isOver(pos) and show_button:
+            step_by_step.color = (0,255,0)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                StepFunc(MapsList)
+        else:
+            step_by_step.color = (0, 100, 0)
     for i in range(1, 25):
         for j in ScMap[str(i)]:
             pygame.draw.line(win,[0,0,0],ScPositions[(str(i))],ScPositions[(str(j))],width=4)
@@ -54,7 +81,10 @@ while run:
         NextGen = population[:10]
         best = population[0]
         print(best)
+        previous_score = score
         score = best[0]
+        if score > previous_score:
+            MapsList.append(best)
         if iter == 1:
             startingscore = score
         population = NextGen[:]
@@ -73,6 +103,7 @@ while run:
         bestgen = font.render(f'Best Generation: {iter}', 1, (0, 0, 0))
         show_button = True
         regen.draw(win, (0, 0, 0))
+        step_by_step.draw(win,(0,0,0))
         win.blit(startscore,(50,335))
         win.blit(generation, (50, 375))
         win.blit(genscore, (50, 425))

@@ -20,10 +20,15 @@ regen = button((0, 100, 0), 159, 550, 200, 50, std_button('Generate again',0))
 step_by_step = button((0, 100, 0), 434, 550, 200, 50, std_button('Step By Step',0))
 show_button = False
 MapsList = []
+scoresList = []
+generationList = []
 
-def StepFunc(MapsList):
+def StepFunc(MapsList,scoresList,generationsList):
     run = True
     currentMap = 0
+    leftButton = button((0, 100, 0), 235, 550, 50, 50, std_button('<',0))
+    rightButton = button((0, 100, 0), 460, 550, 50, 50, std_button('>', 0))
+    backButton = button((0, 100, 0), 320, 550, 100, 50, std_button('back',0))
     while run:
         win.blit(bg, (0, 0))
         for event in pygame.event.get():
@@ -31,12 +36,38 @@ def StepFunc(MapsList):
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
+            if leftButton.isOver(pos):
+                leftButton.color = (0,255,0)
+                if event.type == pygame.MOUSEBUTTONDOWN and currentMap != 0:
+                    currentMap = currentMap - 1
+            else:
+                leftButton.color = (0,100,0)
+            if rightButton.isOver(pos):
+                rightButton.color = (0, 255, 0)
+                if event.type == pygame.MOUSEBUTTONDOWN and currentMap < len(MapsList) - 1:
+                    currentMap = currentMap + 1
+            else:
+                rightButton.color= (0,100,0)
+            if backButton.isOver(pos):
+                backButton.color = (0,255,0)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    run = False
+            else:
+                backButton.color = (0,100,0)
         for i in range(1, 25):
             for j in ScMap[str(i)]:
                 pygame.draw.line(win, [0, 0, 0], ScPositions[(str(i))], ScPositions[(str(j))], width=4)
         for position in ScPositions:
             pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 12)
             pygame.draw.circle(win, ScColors[MapsList[currentMap][1][position]], ScPositions[position], 10)
+        generation = font.render(f'Generation: {generationsList[currentMap]}', 1, (0, 0, 0))
+        genscore = font.render(f'Best Chromossome score: {scoresList[currentMap]}', 1, (0, 0, 0))
+        win.blit(generation, (50, 375))
+        win.blit(genscore, (50, 425))
+        leftButton.draw(win,(0,0,0))
+        rightButton.draw(win,(0,0,0))
+        backButton.draw(win,(0,0,0))
+        pygame.display.update()
 
 
 while run:
@@ -54,12 +85,16 @@ while run:
                 population = InitialPop[:]
                 score = 0
                 iter = 1
+                MapsList = []
+                scoresList = []
+                generationList = []
         else:
             regen.color = (0, 100, 0)
         if step_by_step.isOver(pos) and show_button:
             step_by_step.color = (0,255,0)
             if event.type == pygame.MOUSEBUTTONDOWN:
-                StepFunc(MapsList)
+                StepFunc(MapsList,scoresList,generationList)
+
         else:
             step_by_step.color = (0, 100, 0)
     for i in range(1, 25):
@@ -85,6 +120,8 @@ while run:
         score = best[0]
         if score > previous_score:
             MapsList.append(best)
+            scoresList.append(score)
+            generationList.append(iter)
         if iter == 1:
             startingscore = score
         population = NextGen[:]

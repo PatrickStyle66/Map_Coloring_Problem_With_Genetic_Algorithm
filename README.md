@@ -7,6 +7,8 @@ There's some interesting algorithms that solve the map coloring problem and thei
 In this scenario, I applied the crossover technique on the best samples and the mutation on the worst samples. This way, we can get better samples for each generation.
 
 ## Visualization
+**OBS: The pygame module is needed for visualization**
+
 In this example, I used a map from a brazilian state called 'Santa Catarina' and built a graph representing it.
 
 ### It can achieve the answer really fast:

@@ -10,7 +10,10 @@ In this scenario, I applied the crossover technique on the best samples and the 
 In this example, I used a map from a brazilian state called 'Santa Catarina' and built a graph representing it.
 
 ### It can achieve the answer really fast:
-![GoodScore](https://github.com/PatrickStyle66/FootbalExtension/assets/30088774/92650ac7-c2be-4d31-bc5c-13be877f7f16)
+![GoodScore](https://github.com/PatrickStyle66/Map_Coloring_Problem_With_Genetic_Algorithm/assets/30088774/b3e528d1-e141-4643-a32f-264943aa2137)
 
 ### Or it can struggle to find the answer:
-![NotGoodScore](https://github.com/PatrickStyle66/FootbalExtension/assets/30088774/ad411ef2-6488-45ce-9081-eb32e08d7a76)
+![NotGoodScore](https://github.com/PatrickStyle66/Map_Coloring_Problem_With_Genetic_Algorithm/assets/30088774/77316848-25b5-4f61-b509-73f68d5817fe)
+## Step by Step function
+You can use this option to see only the major changes to the map and which generation this changes occurred
+![Step By Step](https://github.com/PatrickStyle66/Map_Coloring_Problem_With_Genetic_Algorithm/assets/30088774/64721944-9f45-49fc-8c3c-68deeb0f5b03)

@@ -137,7 +137,7 @@ while run:
         startscore = font.render(f'Starting score: {startingscore}', 1, (0, 0, 0))
         generation = font.render(f'Generation: {iter - 1}', 1, (0, 0, 0))
         genscore = font.render(f'Best Chromossome score: {score}', 1, (0, 0, 0))
-        bestgen = font.render(f'Best Generation: {iter - 1}', 1, (0, 0, 0))
+        bestgen = font.render(f'Best Generation: {iter - 1} ', 1, (0, 0, 0))
         show_button = True
         regen.draw(win, (0, 0, 0))
         step_by_step.draw(win,(0,0,0))

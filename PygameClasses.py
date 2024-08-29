@@ -1,10 +1,13 @@
 import pygame
+
+
 class std_button():
     def __init__(self,text = '',filled=0,fontScale= 20,colorFont = (0,0,0)):
         self.filled = filled
         self.fontScale = fontScale
         self.colorFont = colorFont
         self.text = text
+
 
 #A Classe implementa o padrão Introduce Parameter Object
 class button():

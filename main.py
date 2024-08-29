@@ -1,6 +1,6 @@
 import pygame
-from GAfunctions import SC_COLORS, SC_MAP, SC_POSITIONS, generate_pop, cross, mutate
-from PygameClasses import button, std_button
+from generative import SC_COLORS, SC_MAP, SC_POSITIONS, generate_pop, cross, mutate
+from buttons import button, std_button
 from colors import Colors
 
 WIDTH, HEIGHT = 818, 622

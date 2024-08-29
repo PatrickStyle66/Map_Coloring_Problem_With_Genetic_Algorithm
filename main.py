@@ -1,6 +1,6 @@
 import pygame
 from generative import generate_pop, cross, mutate
-from buttons import button, std_button
+from buttons import Button, StdButton
 from constants import Constants
 
 WIDTH, HEIGHT = 818, 622
@@ -41,9 +41,9 @@ def draw_step_map(maps_list, scores_list, generations_list, current_map) -> None
 def step_func(maps_list, scores_list, generations_list) -> None:
     run = True
     current_map = 0
-    left_button = button(Constants.DARK_GREEN, 235, 550, 50, 50, std_button('<',0))
-    right_button = button(Constants.DARK_GREEN, 460, 550, 50, 50, std_button('>', 0))
-    back_button = button(Constants.DARK_GREEN, 320, 550, 100, 50, std_button('back',0))
+    left_button = Button(Constants.DARK_GREEN, 235, 550, 50, 50, StdButton('<',0))
+    right_button = Button(Constants.DARK_GREEN, 460, 550, 50, 50, StdButton('>', 0))
+    back_button = Button(Constants.DARK_GREEN, 320, 550, 100, 50, StdButton('back',0))
     buttons = [left_button, right_button, back_button]
     right_limit = len(maps_list) - 1
     while run:
@@ -130,8 +130,8 @@ def main() -> None:
     population = initial_pop[:]
     score = 0
     iteration = 1
-    regen = button(Constants.DARK_GREEN, 159, 550, 200, 50, std_button('Generate again',0))
-    step_by_step = button(Constants.DARK_GREEN, 434, 550, 200, 50, std_button('Step By Step',0))
+    regen = Button(Constants.DARK_GREEN, 159, 550, 200, 50, StdButton('Generate again',0))
+    step_by_step = Button(Constants.DARK_GREEN, 434, 550, 200, 50, StdButton('Step By Step',0))
     buttons = [regen, step_by_step]
     show_button = False
     maps_list = []

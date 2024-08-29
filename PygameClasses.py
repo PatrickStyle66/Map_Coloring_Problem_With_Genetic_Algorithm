@@ -2,10 +2,10 @@ import pygame
 
 
 class std_button():
-    def __init__(self,text = '',filled=0,fontScale= 20,colorFont = (0,0,0)):
+    def __init__(self, text = '', filled=0, font_scale= 20, font_color = (0,0,0)):
         self.filled = filled
-        self.fontScale = fontScale
-        self.colorFont = colorFont
+        self.font_scale = font_scale
+        self.font_color = font_color
         self.text = text
 
 
@@ -28,12 +28,12 @@ class button():
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), self.std.filled)
 
         if self.std.text != '':
-            font = pygame.font.SysFont('comicsans', self.std.fontScale)
-            text = font.render(self.std.text, 1, self.std.colorFont)
+            font = pygame.font.SysFont('comicsans', self.std.font_scale)
+            text = font.render(self.std.text, 1, self.std.font_color)
             win.blit(text, (
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
-    def isOver(self, pos):
+    def is_over(self, pos):
 
         if pos[0] > self.x and pos[0] < self.x + self.width:
             if pos[1] > self.y and pos[1] < self.y + self.height:

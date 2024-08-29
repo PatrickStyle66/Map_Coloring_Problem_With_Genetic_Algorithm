@@ -1,4 +1,5 @@
 import pygame
+from colors import Colors
 
 
 class std_button():
@@ -33,10 +34,11 @@ class button():
             win.blit(text, (
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
-    def is_over(self, pos):
+    def hover(self, pos):
 
-        if pos[0] > self.x and pos[0] < self.x + self.width:
-            if pos[1] > self.y and pos[1] < self.y + self.height:
-                return True
+        if pos[0] > self.x and pos[0] < self.x + self.width and pos[1] > self.y and pos[1] < self.y + self.height:
+            self.color = Colors.GREEN
+            return True
 
+        self.color = Colors.DARK_GREEN
         return False

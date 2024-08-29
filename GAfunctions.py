@@ -1,4 +1,5 @@
 from random import randrange, sample, choice
+from colors import Colors
 
 SC_MAP = {
     '1':  ['16','21','11','12','20'],
@@ -54,20 +55,15 @@ SC_POSITIONS = {
     '24': (576, 185)
 }
 
-BLUE = (65,105,225)
-RED = (255,0,0)
-GREEN = (0,255,0)
-YELLOW = (255,255,0)
-
 SC_COLORS = {
-    0: BLUE,
-    1: RED,
-    2: GREEN,
-    3: YELLOW
+    0: Colors.BLUE,
+    1: Colors.RED,
+    2: Colors.GREEN,
+    3: Colors.YELLOW
 }
 
 
-def adapt(crom):
+def adapt(crom: dict[str, int]) -> int:
     score = 24
     for i in range(1, 25):
         for j in SC_MAP[str(i)]:
@@ -77,18 +73,19 @@ def adapt(crom):
     return score
 
 
-def generate_pop():
-    crom_list=[]
-    for _ in range(0,10):
+def generate_pop() -> list[tuple[int, dict[str, int]]]:
+    crom_list = list()
+    for _ in range(0, 10):
         crom = {}
         for i in range(1, 25):
             crom[str(i)] = randrange(0, 4)
         adaptation = adapt(crom)
         crom_list.append((adaptation,crom))
+    crom_list.sort(key=lambda x: x[0],reverse=True)
     return crom_list
 
 
-def cross(pop):
+def cross(pop: list[tuple[int, dict[str, int]]]) -> list[tuple[int, dict[str, int]]]:
     crom_list =[]
     for i in range(0,5):
         for j in range(0,5):
@@ -109,7 +106,7 @@ def cross(pop):
     return crom_list
 
 
-def mutate(pop):
+def mutate(pop: list[tuple[int, dict[str, int]]]) -> list[tuple[int, dict[str, int]]]:
     crom_list = []
     for i in range(0,5):
         n = randrange(4,11)

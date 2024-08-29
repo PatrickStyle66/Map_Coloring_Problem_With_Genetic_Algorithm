@@ -1,149 +1,172 @@
-from  GAfunctions import *
-from PygameClasses import *
-W, H = 818, 622
+import pygame
+from generative import generate_pop, cross, mutate
+from buttons import Button, StdButton
+from constants import Constants
 
-win = pygame.display.set_mode((W, H))
+WIDTH, HEIGHT = 818, 622
+pygame.init()
 
-pygame.display.set_caption('GA_Visualization')
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Map Coloring Problem')
 
 bg = pygame.image.load('SCMap.jpg').convert()
-
-pygame.init()
 font = pygame.font.SysFont('comicsans', 30)
-run = True
-InitialPop = generatePop()
-InitialPop.sort(key=lambda x: x[0],reverse=True)
-population = InitialPop[:]
-score = 0
-iter = 1
-regen = button((0, 100, 0), 159, 550, 200, 50, std_button('Generate again',0))
-step_by_step = button((0, 100, 0), 434, 550, 200, 50, std_button('Step By Step',0))
-show_button = False
-MapsList = []
-scoresList = []
-generationList = []
 
-def StepFunc(MapsList,scoresList,generationsList):
+
+def handle_step_buttons(event, pos, buttons, current_map, right_limit) -> tuple[bool, int]:
+    left_button, right_button, back_button = buttons
+    if left_button.hover(pos) and event.type == pygame.MOUSEBUTTONDOWN and current_map >= 0:
+        current_map -= 1
+    if right_button.hover(pos) and event.type == pygame.MOUSEBUTTONDOWN and current_map < right_limit:
+        current_map += 1
+    if back_button.hover(pos) and event.type == pygame.MOUSEBUTTONDOWN:
+        return False, current_map
+
+    return True, current_map
+
+
+def draw_step_map(maps_list, scores_list, generations_list, current_map) -> None:
+    for i in range(1, 25):
+        for j in Constants.SC_MAP[str(i)]:
+            pygame.draw.line(WIN, Constants.BLACK, Constants.SC_POSITIONS[(str(i))], Constants.SC_POSITIONS[(str(j))], width=4)
+    for position in Constants.SC_POSITIONS:
+        pygame.draw.circle(WIN, Constants.BLACK, Constants.SC_POSITIONS[position], 12)
+        pygame.draw.circle(WIN, Constants.SC_COLORS[maps_list[current_map][1][position]], Constants.SC_POSITIONS[position], 10)
+    generation = font.render(f'Generation: {generations_list[current_map]}', 1, Constants.BLACK)
+    genscore = font.render(f'Best Chromossome score: {scores_list[current_map]}', 1, Constants.BLACK)
+    WIN.blit(generation, (50, 375))
+    WIN.blit(genscore, (50, 425))
+
+
+def step_func(maps_list, scores_list, generations_list) -> None:
     run = True
-    currentMap = 0
-    leftButton = button((0, 100, 0), 235, 550, 50, 50, std_button('<',0))
-    rightButton = button((0, 100, 0), 460, 550, 50, 50, std_button('>', 0))
-    backButton = button((0, 100, 0), 320, 550, 100, 50, std_button('back',0))
+    current_map = 0
+    left_button = Button(Constants.DARK_GREEN, 235, 550, 50, 50, StdButton('<',0))
+    right_button = Button(Constants.DARK_GREEN, 460, 550, 50, 50, StdButton('>', 0))
+    back_button = Button(Constants.DARK_GREEN, 320, 550, 100, 50, StdButton('back',0))
+    buttons = [left_button, right_button, back_button]
+    right_limit = len(maps_list) - 1
     while run:
-        win.blit(bg, (0, 0))
+        WIN.blit(bg, (0, 0))
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
-            if leftButton.isOver(pos):
-                leftButton.color = (0,255,0)
-                if event.type == pygame.MOUSEBUTTONDOWN and currentMap != 0:
-                    currentMap = currentMap - 1
-            else:
-                leftButton.color = (0,100,0)
-            if rightButton.isOver(pos):
-                rightButton.color = (0, 255, 0)
-                if event.type == pygame.MOUSEBUTTONDOWN and currentMap < len(MapsList) - 1:
-                    currentMap = currentMap + 1
-            else:
-                rightButton.color= (0,100,0)
-            if backButton.isOver(pos):
-                backButton.color = (0,255,0)
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    run = False
-            else:
-                backButton.color = (0,100,0)
-        for i in range(1, 25):
-            for j in ScMap[str(i)]:
-                pygame.draw.line(win, [0, 0, 0], ScPositions[(str(i))], ScPositions[(str(j))], width=4)
-        for position in ScPositions:
-            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 12)
-            pygame.draw.circle(win, ScColors[MapsList[currentMap][1][position]], ScPositions[position], 10)
-        generation = font.render(f'Generation: {generationsList[currentMap]}', 1, (0, 0, 0))
-        genscore = font.render(f'Best Chromossome score: {scoresList[currentMap]}', 1, (0, 0, 0))
-        win.blit(generation, (50, 375))
-        win.blit(genscore, (50, 425))
-        leftButton.draw(win,(0,0,0))
-        rightButton.draw(win,(0,0,0))
-        backButton.draw(win,(0,0,0))
+            run, current_map = handle_step_buttons(event, pos, buttons, current_map, right_limit)
+        
+        draw_step_map(maps_list, scores_list, generations_list, current_map)
+        left_button.draw(WIN,Constants.BLACK)
+        right_button.draw(WIN,Constants.BLACK)
+        back_button.draw(WIN,Constants.BLACK)
         pygame.display.update()
 
 
-while run:
-    win.blit(bg,(0,0))
-    for event in pygame.event.get():
-        pos = pygame.mouse.get_pos()
-        if event.type == pygame.QUIT:
-            run = False
-            pygame.quit()
-        if regen.isOver(pos) and show_button:
-            regen.color = (0,255,0)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                InitialPop = generatePop()
-                InitialPop.sort(key=lambda x: x[0], reverse=True)
-                population = InitialPop[:]
-                score = 0
-                iter = 1
-                MapsList = []
-                scoresList = []
-                generationList = []
-        else:
-            regen.color = (0, 100, 0)
-        if step_by_step.isOver(pos) and show_button:
-            step_by_step.color = (0,255,0)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                StepFunc(MapsList,scoresList,generationList)
+def end_processing(startingscore, iteration, score, regen, step_by_step) -> None:
+    startscore = font.render(f'Starting score: {startingscore}', 1, Constants.BLACK)
+    generation = font.render(f'Generation: {iteration - 1}', 1, Constants.BLACK)
+    genscore = font.render(f'Best Chromossome score: {score}', 1, Constants.BLACK)
+    bestgen = font.render(f'Best Generation: {iteration - 1} ', 1, Constants.BLACK)
+    regen.draw(WIN, Constants.BLACK)
+    step_by_step.draw(WIN,Constants.BLACK)
+    WIN.blit(startscore, (50, 335))
+    WIN.blit(generation, (50, 375))
+    WIN.blit(genscore, (50, 425))
+    WIN.blit(bestgen, (50,475))
 
-        else:
-            step_by_step.color = (0, 100, 0)
+
+def display_gen_info(iteration, score, startingscore) -> None:
+    generation = font.render(f'Generation: {iteration}',1,Constants.BLACK)
+    genscore = font.render(f'Best Chromossome score: {score}',1,Constants.BLACK)
+    startscore = font.render(f'Starting score: {startingscore}',1,Constants.BLACK)
+    WIN.blit(startscore, (50, 325))
+    WIN.blit(generation, (50, 375))
+    WIN.blit(genscore, (50, 425))
+
+
+def new_generation(population) -> tuple[list[tuple[int, dict[str, int]]], tuple[int, dict[str, int]]]:
+    best5 = population[:5]
+    worst5 = population[5:]
+    population.extend(cross(best5))
+    population.extend(mutate(worst5))
+    population.sort(key=lambda x: x[0], reverse=True)
+    best = population[0]
+    print(best)
+    return population[:10], best
+
+
+def draw_map(iteration, best) -> None:
     for i in range(1, 25):
-        for j in ScMap[str(i)]:
-            pygame.draw.line(win,[0,0,0],ScPositions[(str(i))],ScPositions[(str(j))],width=4)
-    for position in ScPositions:
-        if iter < 2:
-            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 12)
-            pygame.draw.circle(win, [255, 255, 255], ScPositions[position], 10)
+        for j in Constants.SC_MAP[str(i)]:
+            pygame.draw.line(
+                WIN,
+                Constants.BLACK,
+                Constants.SC_POSITIONS[(str(i))],
+                Constants.SC_POSITIONS[(str(j))],
+                width=4
+            )
+    for position in Constants.SC_POSITIONS:
+        if iteration < 2:
+            pygame.draw.circle(WIN, Constants.BLACK, Constants.SC_POSITIONS[position], 12)
+            pygame.draw.circle(WIN, Constants.WHITE, Constants.SC_POSITIONS[position], 10)
         else:
-            pygame.draw.circle(win, [0, 0, 0], ScPositions[position], 12)
-            pygame.draw.circle(win, ScColors[best[1][position]], ScPositions[position], 10)
-    if score != 24:
-        Best5 = population[:5]
-        Worst5 = population[5:]
-        population.extend(Cross(Best5))
-        population.extend(Mutate(Worst5))
-        population.sort(key=lambda x: x[0], reverse=True)
-        NextGen = population[:10]
-        best = population[0]
-        print(best)
-        previous_score = score
-        score = best[0]
-        if score > previous_score:
-            MapsList.append(best)
-            scoresList.append(score)
-            generationList.append(iter)
-        if iter == 1:
-            startingscore = score
-        population = NextGen[:]
-        generation = font.render(f'Generation: {iter}',1,(0,0,0))
-        genscore = font.render(f'Best Chromossome score: {score}',1,(0,0,0))
-        startscore = font.render(f'Starting score: {startingscore}',1,(0,0,0))
-        win.blit(startscore, (50, 325))
-        win.blit(generation, (50, 375))
-        win.blit(genscore, (50, 425))
-        iter = iter + 1
-        show_button = False
-    else:
-        startscore = font.render(f'Starting score: {startingscore}', 1, (0, 0, 0))
-        generation = font.render(f'Generation: {iter - 1}', 1, (0, 0, 0))
-        genscore = font.render(f'Best Chromossome score: {score}', 1, (0, 0, 0))
-        bestgen = font.render(f'Best Generation: {iter - 1} ', 1, (0, 0, 0))
-        show_button = True
-        regen.draw(win, (0, 0, 0))
-        step_by_step.draw(win,(0,0,0))
-        win.blit(startscore,(50,335))
-        win.blit(generation, (50, 375))
-        win.blit(genscore, (50, 425))
-        win.blit(bestgen,(50,475))
+            pygame.draw.circle(WIN, Constants.BLACK, Constants.SC_POSITIONS[position], 12)
+            pygame.draw.circle(WIN, Constants.SC_COLORS[best[1][position]], Constants.SC_POSITIONS[position], 10)
 
-    pygame.display.update()
+
+def handle_main_buttons(event, pos, buttons, show_button, maps_list, scores_list, generation_list) -> None:
+    regen, step_by_step = buttons
+    if regen.hover(pos) and show_button and event.type == pygame.MOUSEBUTTONDOWN:
+        main()
+        exit()
+    if step_by_step.hover(pos) and show_button:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            step_func(maps_list,scores_list,generation_list)
+
+
+def main() -> None:
+    run = True
+    initial_pop = generate_pop()
+    population = initial_pop[:]
+    score = 0
+    iteration = 1
+    regen = Button(Constants.DARK_GREEN, 159, 550, 200, 50, StdButton('Generate again',0))
+    step_by_step = Button(Constants.DARK_GREEN, 434, 550, 200, 50, StdButton('Step By Step',0))
+    buttons = [regen, step_by_step]
+    show_button = False
+    maps_list = []
+    scores_list = []
+    generation_list = []
+    while run:
+        WIN.blit(bg,(0,0))
+        for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+            handle_main_buttons(event, pos, buttons, show_button, maps_list, scores_list, generation_list)
+
+        if score != 24:
+            next_gen, best = new_generation(population)
+            previous_score = score
+            score = best[0]
+            if score > previous_score:
+                maps_list.append(best)
+                scores_list.append(score)
+                generation_list.append(iteration)
+            if iteration == 1:
+                startingscore = score
+            population = next_gen[:]
+            display_gen_info(iteration, score, startingscore)
+            iteration = iteration + 1
+            show_button = False
+        else:
+            end_processing(startingscore, iteration, score, regen, step_by_step)
+            show_button = True
+        draw_map(iteration, best)
+
+        pygame.display.update()
+
+
+if __name__ == '__main__':
+    main()
